@@ -57,7 +57,7 @@ def main() -> None:
             # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
             for i in range(pivot_row, len(matrix)):
                 pivot_value = matrix[pivot_row][pivot_column]
-                row_scaling(matrix, i, 1 / float(pivot_value), float(pivot_value))  # To change the pivot to 1
+                row_scaling(matrix, i, 1 / pivot_value, pivot_value)  # To change the pivot to 1
 
             print(f"Matrix after scaling:")
             print_matrix(matrix)
@@ -66,7 +66,7 @@ def main() -> None:
             if pivot_row != len(matrix) - 1: # Verify the pivot is not in the last row of the matrix
                 for i in range(pivot_row + 1, len(matrix)):
                     # Find any nonzeros below the pivot to eliminate through row replacement
-                    value = float(matrix[i][pivot_column])
+                    value = matrix[i][pivot_column]
                     if value != 0:
                        row_replacement(matrix, i, -value, pivot_row)
                     else:
@@ -74,7 +74,7 @@ def main() -> None:
                 if pivot_row > 0:
                     for i in range(pivot_row - 1, -1, -1):
                         # Find any nonzeros above the pivot to eliminate through row replacement
-                        value = float(matrix[i][pivot_column])
+                        value = matrix[i][pivot_column]
                         if value != 0:
                             row_replacement(matrix, i, -value, pivot_row)
                         else:
