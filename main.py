@@ -7,11 +7,11 @@ def main() -> None:
                             [8.0, 5.0, 3.0, 6.],
                             [1.0, 1.0, 4.0, 3.0],
                             [0.0, 3.0, 5.0, 8.0]]
-    print("Matrix:")
-    print_matrix(matrix)
+    print(f"Matrix:\n{matrix}")
     init(autoreset=True) # Initialize colorama for error messages and auto-resetting after each line
 
     non_zero_index_matrix = [(row_index, col_index) if col_value != 0 else (-1, -1) for row_index, row_value in enumerate(matrix) for col_index, col_value in enumerate(row_value)]
+    print(non_zero_index_matrix)
     nonzero_indicies: List[Tuple[int, int, bool]] = []
     pivot_coordinates: List[Tuple[int, int, bool]] = []
 
@@ -50,6 +50,7 @@ def main() -> None:
 
     else:
         print(Fore.YELLOW + "WARNING: No pivot found in the matrix.")
+    print(f"PIVOT COORDINATES: {pivot_coordinates}")
 
     # To scale at expected pivot coordinates and eliminate nonzeros above and below pivots through row replacement
     while len(pivot_coordinates) > 0:
@@ -57,6 +58,7 @@ def main() -> None:
             # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
             for i in range(pivot_row, len(matrix)):
                 pivot_value = matrix[pivot_row][pivot_column]
+                print("PIVOT VALUE:", pivot_value)
                 row_scaling(matrix, i, 1 / float(pivot_value), float(pivot_value))  # To change the pivot to 1
 
             print(f"Matrix after scaling:")
@@ -83,8 +85,6 @@ def main() -> None:
             pivot_coordinates.remove((pivot_row, pivot_column, pivot_equal_to_one))
             print("Matrix after row replacement:")
             print_matrix(matrix)
-    print(Fore.GREEN + "\nSUCCESS: Transformed augmented matrix into reduced row echelon form (RREF).")
-    print_matrix(matrix)
 
 def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_value: float = None) -> None: # The pivot is optional and only for printing the multiplier
     for index, value in enumerate(matrix[row_index]):
@@ -98,10 +98,10 @@ def row_replacement(matrix: List[List[float]], row_index: int, multiplier: float
     if multiplier == 0:
         print(Fore.RED + f"ERROR: Cannot perform row replacement with a multiplier equal to 0!")
     for index, value in enumerate(matrix[row_index]):
+        print("INDEX:", index, "VALUE:", value)
         matrix[row_index][index] = value + multiplier * matrix[pivot_row][index] # Current value + multiplier * value above in pivot row
 
-    print(Fore.GREEN + f"SUCCESS: Replaced row {row_index} with R{row_index} + {multiplier}*R{pivot_row}")
-
+    # print(Fore.GREEN + f"SUCCESS: Replaced row {row_index} with R{row_index} + {multiplier}*R{pivot_row}")
 def row_exchange(matrix: List[List[float]]) -> None:
     pass
 
