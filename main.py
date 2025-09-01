@@ -11,7 +11,7 @@ def main() -> None:
     print_matrix(matrix)
     init(autoreset=True) # Initialize colorama for error messages and auto-resetting after each line
 
-    non_zero_index_matrix = [(row_index, col_index) if col_value != 0 else (-1, -1) for row_index, row_value in enumerate(matrix) for col_index, col_value in enumerate(row_value)]
+    non_zero_index_matrix: List[Tuple[int, int]] = [(row_index, col_index) if col_value != 0 else (-1, -1) for row_index, row_value in enumerate(matrix) for col_index, col_value in enumerate(row_value)]
     nonzero_indicies: List[Tuple[int, int, bool]] = []
     pivot_coordinates: List[Tuple[int, int, bool]] = []
 
