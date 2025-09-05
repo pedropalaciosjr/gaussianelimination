@@ -7,6 +7,14 @@ def main() -> None:
     matrix: List[List[float]] = [[0, 1, 5, 3],
                                 [1, 4, 4, -3],
                                 [2, 6, 3, -2]]
+
+    # matrix = [[2, 1, 4],
+    #           [2, -1, 0]]
+
+    # matrix = [[1, 0, 6, 2],
+    #           [0, 1, 4, -7],
+    #           [1, 1, 10, -5]]
+
     print("Starting matrix:")
     print_matrix(matrix)
 
@@ -92,7 +100,7 @@ def main() -> None:
         print_matrix(matrix)
 
     if not find_pivot_locations_and_store(matrix):
-        print(Fore.RED + "\nFAILED: Failed to locate pivots or verify the consistency of the augmented matrix.")
+        print(Fore.RED + "\nFAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
         return
 
     print(Fore.GREEN + "\nSUCCESS: Located the pivots and verified the consistency of the augmented matrix.")
@@ -131,12 +139,31 @@ def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
     non_zero_found = False
     first_pivot_coordinate = None
     nonzero_indicies: List[Tuple[int, int, bool, bool]] = []
-    non_zero_index_matrix: List[Tuple[int, int]] = [(row_index, col_index) if col_value != 0 else (-1, -1) for row_index, row_value in enumerate(matrix) for col_index, col_value in enumerate(row_value)]
+    non_zero_index_matrix: List[Tuple[int, int]] = []
     pivot_coordinates = []
+
+    # Populate the nonzero matrix with the locations of the nonzeros to find the first pivot and nonzero rows for infinite solutions check
+    for row_index, row_value in enumerate(matrix):
+        for col_index, col_value in enumerate(row_value):
+            if col_value != 0:
+                non_zero_index_matrix.append((row_index, col_index))
+
+    # Find the number of nonzero rows
+    row_indicies_with_nonzeros = []
+    for row in range(len(matrix)):
+        for non_zero in range(len(non_zero_index_matrix)):
+            if row == non_zero_index_matrix[non_zero][0] and non_zero_index_matrix[non_zero][0] not in row_indicies_with_nonzeros:
+                row_indicies_with_nonzeros.append(row)
+    rows_with_nonzeros_count = len(row_indicies_with_nonzeros)
+
+    # Check if the matrix has an infinite number of solutions
+    if (len(matrix[0]) - 1) > rows_with_nonzeros_count: # Number of variables > Number of rows with nonzeros
+        print(Fore.RED + "ERROR: The augmented matrix has an infinite number of solutions.")
+        return False
 
     for i in range(len(matrix)):
         for (row, col) in non_zero_index_matrix:
-            if row == i and col != len(matrix[i]):  # If there exists a nonzero coordinate in the ith row that's not the last element
+            if row == i and col != len(matrix[i]) - 1:  # If there exists a nonzero coordinate in the ith row that's not the last element
                 non_zero_found = True
                 equal_to_one = matrix[row][col] == 1
                 equal_to_zero = matrix[row][col] == 0
