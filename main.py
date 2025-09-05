@@ -15,6 +15,10 @@ def main() -> None:
     #           [0, 1, 4, -7],
     #           [1, 1, 10, -5]]
 
+    # matrix = [[1, 0, 6, 2],
+    #           [0, 0, 0, 0],
+    #           [0, 0, 0, 0]]
+
     print("Starting matrix:")
     print_matrix(matrix)
 
@@ -22,8 +26,10 @@ def main() -> None:
 
     init(autoreset=True) # Initialize colorama for error messages and auto-resetting after each line
 
-    # Searches for the first nonzero entry in the first row to create a diagonal of expected pivots and checks for consistency
-    find_pivot_locations_and_store(matrix)
+    # Searches for the first nonzero entry in the first row to create a diagonal of expected pivots, checks for consistency and infinite number of solutions
+    if not find_pivot_locations_and_store(matrix):
+        print(Fore.RED + "FAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
+        return
 
     print(f"PIVOT COORDINATES: {pivot_coordinates}")
     expected_pivot_coordinates: List[Tuple[int, int, bool, bool]] = []
@@ -59,7 +65,9 @@ def main() -> None:
                     print_matrix(matrix)
 
                     # Find the first nonzero entry in the first row to create a new diagonal of pivots while verifying the consistency again
-                    find_pivot_locations_and_store(matrix)
+                    if not find_pivot_locations_and_store(matrix):
+                        print(Fore.RED + "\nFAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
+                        return
                     break
 
     print(f"PIVOT COORDINATES AFTER EXCHANGE: {pivot_coordinates}\n")
