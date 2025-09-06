@@ -113,8 +113,11 @@ def main() -> None:
         return
 
     print(Fore.GREEN + "\nSUCCESS: Located the pivots and verified the consistency of the augmented matrix.")
-    print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into reduced row echelon form (RREF).")
-    print(Fore.YELLOW + "\nFinal matrix:")
+    if RREF:
+        print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into reduced row echelon form (RREF).")
+    else:
+        print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into row echelon form (REF).")
+    print(Fore.GREEN + "\nFinal matrix:")
     print_matrix(matrix)
 
 def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_value: float = None) -> None: # The pivot is optional and only for printing the multiplier
@@ -124,7 +127,7 @@ def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_val
     if pivot_value is not None:
         print(Fore.GREEN + f"SUCCESS: Scaled row {row_index} by 1/{pivot_value if 0 < pivot_value < 1 else int(pivot_value)}.")
     else:
-        print(Fore.GREEN + f"SUCCESS: Scaled row {row_index} by {num}")
+        print(Fore.GREEN + f"SUCCESS: Scaled row {row_index} by {num}.")
 
 def row_replacement(matrix: List[List[float]], row_index: int, multiplier: float, pivot_row: int) -> None:
     if multiplier == 0:
@@ -133,7 +136,7 @@ def row_replacement(matrix: List[List[float]], row_index: int, multiplier: float
     for index, value in enumerate(matrix[row_index]):
         matrix[row_index][index] = value + multiplier * matrix[pivot_row][index] # Current value + multiplier * value above in pivot row
 
-    print(Fore.GREEN + f"SUCCESS: Replaced row {row_index} with R{row_index} + {multiplier}*R{pivot_row}")
+    print(Fore.GREEN + f"SUCCESS: Replaced row {row_index} with R{row_index} + {multiplier}*R{pivot_row}.")
 
 def row_exchange(matrix: List[List[float]], row_index: int, second_row_index: int) -> None:
     temp_row: List[float] = matrix[row_index]
@@ -147,7 +150,7 @@ def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
     # To check if there's at least one nonzero entry in each row excluding the last element, if the matrix is consistent, and saves the first potential pivot
     non_zero_found = False
     first_pivot_coordinate = None
-    nonzero_indicies: List[Tuple[int, int, bool, bool]] = []
+    nonzero_indices: List[Tuple[int, int, bool, bool]] = []
     non_zero_index_matrix: List[Tuple[int, int]] = []
     pivot_coordinates = []
 
@@ -158,12 +161,12 @@ def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
                 non_zero_index_matrix.append((row_index, col_index))
 
     # Find the number of nonzero rows
-    row_indicies_with_nonzeros = []
+    row_indices_with_nonzeros = []
     for row in range(len(matrix)):
         for non_zero in range(len(non_zero_index_matrix)):
-            if row == non_zero_index_matrix[non_zero][0] and non_zero_index_matrix[non_zero][0] not in row_indicies_with_nonzeros:
-                row_indicies_with_nonzeros.append(row)
-    rows_with_nonzeros_count = len(row_indicies_with_nonzeros)
+            if row == non_zero_index_matrix[non_zero][0] and non_zero_index_matrix[non_zero][0] not in row_indices_with_nonzeros:
+                row_indices_with_nonzeros.append(row)
+    rows_with_nonzeros_count = len(row_indices_with_nonzeros)
 
     # Check if the matrix has an infinite number of solutions
     if (len(matrix[0]) - 1) > rows_with_nonzeros_count: # Number of variables > Number of rows with nonzeros
@@ -178,19 +181,19 @@ def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
                 equal_to_zero = matrix[row][col] == 0
 
                 # To add the coordinates of potential pivots, the first nonzero entry of each row
-                nonzero_indicies.append((row, col, equal_to_one, equal_to_zero))
+                nonzero_indices.append((row, col, equal_to_one, equal_to_zero))
 
-                first_pivot_coordinate = nonzero_indicies[0]
+                first_pivot_coordinate = nonzero_indices[0]
         if not non_zero_found and matrix[i][-1] != 0:
             # If there's only zeros in the coefficients and a nonzero in the row's last column—inconsistent
             print(Fore.RED + "ERROR: No nonzero coefficient found, yet there's still a nonzero constant. This matrix is inconsistent.")
             return False
-    print(Fore.GREEN + "SUCCESS: The augmented matrix is consistent. Proceeding with creating pivots and performing row operations for RREF.")
+    print(Fore.GREEN + "SUCCESS: The augmented matrix is consistent. Proceeding with creating pivots and performing row operations.")
 
     # To populate the pivot coordinates list with the coordinates of each pivot
     if first_pivot_coordinate is not None:
         new_pivot_row, new_pivot_column, new_pivot_equal_to_one, new_pivot_equal_to_zero = first_pivot_coordinate
-        for i in range(first_pivot_coordinate[0], len(matrix)):  # Start at the row of the first pivot and end at the last row of matrix
+        for i in range(new_pivot_row, len(matrix)):  # Start at the row of the first pivot and end at the last row of matrix
             if matrix[new_pivot_row][new_pivot_column] == 0 and new_pivot_column != (len(matrix[new_pivot_row]) - 2):
                 new_pivot_column += 1
             elif new_pivot_row != (len(matrix)) and new_pivot_column != (len(matrix[new_pivot_row]) - 1):
