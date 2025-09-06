@@ -76,6 +76,7 @@ def main() -> None:
     for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
         # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
         pivot_value = matrix[pivot_row][pivot_column]
+        pivot_equal_to_one, pivot_equal_to_zero = matrix[pivot_row][pivot_column] == 1, matrix[pivot_row][pivot_column] == 0
 
         if pivot_equal_to_zero:
             continue
