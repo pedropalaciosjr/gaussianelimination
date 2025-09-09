@@ -4,20 +4,49 @@ from typing import Tuple, List
 
 def main() -> None:
     global pivot_coordinates
-    matrix: List[List[float]] = [[0, 1, 5, 3],
-                                [1, 4, 4, -3],
-                                [2, 6, 3, -2]]
+    # matrix: List[List[float]] = [[0, 1, 5, 3],
+    #                             [1, 4, 4, -3],
+    #                             [2, 6, 3, -2]]
+
+    matrix = [[1, 4, -5, 1, 2],
+              [2, 5, -4, -1, 4],
+              [-3, -9, 9, 2, 2]]
 
     # matrix = [[2, 1, 4],
     #           [2, -1, 0]]
 
-    # matrix = [[1, 0, 6, 2],
+    # matrix = [[0, 0, 6, 2],
     #           [0, 1, 4, -7],
     #           [1, 1, 10, -5]]
 
-    # matrix = [[1, 0, 6, 2],
-    #           [0, 0, 0, 0],
-    #           [0, 0, 0, 0]]
+    # matrix = [[0, 0, -5, 0, -6, 3],
+    #           [0, 2, 8, -1, 0, 2],
+    #           [0, 0, 0, 0, 2, 0],
+    #           [0, 0, 0, 0, 0, 0]]
+
+    # matrix = [[1, 0, -6, 0, -6, 3],
+    #           [0, 1, 8, -1, 0, 2],
+    #           [0, 0, 0, 0, 1, 0],
+    #           [0, 0, 0, 0, 0, 0],
+    #           [1, 0, -5, 0, -6, 3],
+    #           [0, 1, 8, -1, 0, 2],
+    #           [0, 0, 0, 0, 1, 0],
+    #           [0, 0, 0, 0, 0, 0],
+    #           [1, 0, -6, 0, -6, 3],
+    #           [0, 1, 8, -1, 0, 2],
+    #           [2, 0, 0, 0, 1, 0],
+    #           [0, 0, 0, 0, 0, 0],
+    #           [1, 0, -5, 0, -6, 3],
+    #           [0, 1, 8, -1, 0, 2],
+    #           [3, 0, 0, 0, 1, 0],
+    #           [1, 0, -6, 0, -6, 3],
+    #           [0, 1, 8, -1, 0, 2],
+    #           [0, 0, 0, 0, 1, 0],
+    #           [8, 0, 0, 0, 0, 0],
+    #           [1, 0, -5, 0, -6, 3],
+    #           [-3, 1, 8, -1, 0, 2],
+    #           [0, 0, 0, 0, 1, 0]
+    #           ]
 
     print("Starting matrix:")
     print_matrix(matrix)
@@ -28,7 +57,7 @@ def main() -> None:
 
     # Searches for the first nonzero entry in the first row to create a diagonal of expected pivots, checks for consistency and infinite number of solutions
     if not find_pivot_locations_and_store(matrix):
-        print(Fore.RED + "FAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
+        print(Fore.RED + "FAILED: Failed to either locate pivots or verify the consistency of the augmented matrix.")
         return
 
     print(f"PIVOT COORDINATES: {pivot_coordinates}")
@@ -66,59 +95,65 @@ def main() -> None:
 
                     # Find the first nonzero entry in the first row to create a new diagonal of pivots while verifying the consistency again
                     if not find_pivot_locations_and_store(matrix):
-                        print(Fore.RED + "\nFAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
+                        print(Fore.RED + "\nFAILED: Failed to either locate pivots or verify the consistency of the augmented matrix.")
                         return
                     break
 
     print(f"PIVOT COORDINATES AFTER EXCHANGE: {pivot_coordinates}\n")
 
     # To scale at expected pivot coordinates for nonones and nonzeros and eliminate nonzeros above and below pivots through row replacement
-    for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
-        # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
-        pivot_value = matrix[pivot_row][pivot_column]
-        pivot_equal_to_one, pivot_equal_to_zero = matrix[pivot_row][pivot_column] == 1, matrix[pivot_row][pivot_column] == 0
+    while not pivots_equal_to_one(matrix):
+        for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
+            # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
+            pivot_value = matrix[pivot_row][pivot_column]
+            pivot_equal_to_one, pivot_equal_to_zero = matrix[pivot_row][pivot_column] == 1, matrix[pivot_row][pivot_column] == 0
 
-        if pivot_equal_to_zero:
-            continue
-        elif not pivot_equal_to_one:
-            row_scaling(matrix, pivot_row, 1 / pivot_value, pivot_value)  # To change the pivot to 1
+            if pivot_equal_to_zero:
+                continue
+            elif not pivot_equal_to_one:
+                row_scaling(matrix, pivot_row, 1 / pivot_value, pivot_value)  # To change the pivot to 1
 
-            print(f"Matrix after scaling:")
-            print_matrix(matrix)
+                print(f"Matrix after scaling:")
+                print_matrix(matrix)
 
-        # Search for nonzeros below each pivot and eliminate with pivot
-        for i in range(pivot_row + 1, len(matrix)):
-            # Find any nonzeros below the pivot to eliminate through row replacement
-            value = matrix[i][pivot_column]
-            if value != 0:
-                row_replacement(matrix, i, -value, pivot_row)
-            else:
-               continue
-
-        if pivot_row > 0 and RREF:
-            for i in range(pivot_row - 1, -1, -1):
-                # Find any nonzeros above the pivot to eliminate through row replacement
+            # Search for nonzeros below each pivot and eliminate with pivot
+            for i in range(pivot_row + 1, len(matrix)):
+                # Find any nonzeros below the pivot to eliminate through row replacement
                 value = matrix[i][pivot_column]
                 if value != 0:
                     row_replacement(matrix, i, -value, pivot_row)
                 else:
-                    continue
-            print()
+                   continue
 
-        print("Matrix after row replacement:")
-        print_matrix(matrix)
+            if pivot_row > 0 and RREF:
+                for i in range(pivot_row - 1, -1, -1):
+                    # Find any nonzeros above the pivot to eliminate through row replacement
+                    value = matrix[i][pivot_column]
+                    if value != 0:
+                        row_replacement(matrix, i, -value, pivot_row)
+                    else:
+                        continue
+                print()
 
-    if not find_pivot_locations_and_store(matrix):
-        print(Fore.RED + "\nFAILED: Failed to either locate pivots, verify the consistency of the augmented matrix, or verify a noninfinite number of solutions.")
+            print("Matrix after row replacement:")
+            print_matrix(matrix)
+
+            if not find_pivot_locations_and_store(matrix):
+                print(Fore.RED + "\nFAILED: Failed to either locate pivots or verify the consistency of the augmented matrix.")
+                return
+
+    if not infinite_number_of_solutions_validation(matrix):
+        print(Fore.RED + "\nFAILED: An infinite number of solutions has been detected in the augmented matrix.")
         return
 
-    print(Fore.GREEN + "\nSUCCESS: Located the pivots and verified the consistency of the augmented matrix.")
-    if RREF:
-        print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into reduced row echelon form (RREF).")
-    else:
+    if not RREF:
         print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into row echelon form (REF).")
+    else:
+        print(Fore.GREEN + "SUCCESS: Transformed augmented matrix into reduced row echelon form (RREF).")
+
     print(Fore.GREEN + "\nFinal matrix:")
     print_matrix(matrix)
+
 
 def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_value: float = None) -> None: # The pivot is optional and only for printing the multiplier
     for index, value in enumerate(matrix[row_index]):
@@ -148,62 +183,69 @@ def row_exchange(matrix: List[List[float]], row_index: int, second_row_index: in
 def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
     global pivot_coordinates
     # To check if there's at least one nonzero entry in each row excluding the last element, if the matrix is consistent, and saves the first potential pivot
-    non_zero_found = False
-    first_pivot_coordinate = None
-    nonzero_indices: List[Tuple[int, int, bool, bool]] = []
-    non_zero_index_matrix: List[Tuple[int, int]] = []
+    non_zero_index_matrix: List[Tuple[int, int, bool, bool]] = []
     pivot_coordinates = []
+    nonzero_rows = []
 
     # Populate the nonzero matrix with the locations of the nonzeros to find the first pivot and nonzero rows for infinite solutions check
     for row_index, row_value in enumerate(matrix):
         for col_index, col_value in enumerate(row_value):
-            if col_value != 0:
-                non_zero_index_matrix.append((row_index, col_index))
+            if col_value != 0 and row_index not in nonzero_rows:
+                nonzero_equal_to_one, nonzero_equal_to_zero = col_value == 1, col_value == 0
+                non_zero_index_matrix.append((row_index, col_index, nonzero_equal_to_one, nonzero_equal_to_zero))
+                nonzero_rows.append(row_index)
 
-    # Find the number of nonzero rows
-    row_indices_with_nonzeros = []
-    for row in range(len(matrix)):
-        for non_zero in range(len(non_zero_index_matrix)):
-            if row == non_zero_index_matrix[non_zero][0] and non_zero_index_matrix[non_zero][0] not in row_indices_with_nonzeros:
-                row_indices_with_nonzeros.append(row)
-    rows_with_nonzeros_count = len(row_indices_with_nonzeros)
-
-    # Check if the matrix has an infinite number of solutions
-    if (len(matrix[0]) - 1) > rows_with_nonzeros_count: # Number of variables > Number of rows with nonzeros
-        print(Fore.RED + "ERROR: The augmented matrix has an infinite number of solutions.")
-        return False
-
+    # Verify the consistency of the matrix
     for i in range(len(matrix)):
-        for (row, col) in non_zero_index_matrix:
-            if row == i and col != len(matrix[i]) - 1:  # If there exists a nonzero coordinate in the ith row that's not the last element
-                non_zero_found = True
-                equal_to_one = matrix[row][col] == 1
-                equal_to_zero = matrix[row][col] == 0
-
-                # To add the coordinates of potential pivots, the first nonzero entry of each row
-                nonzero_indices.append((row, col, equal_to_one, equal_to_zero))
-
-                first_pivot_coordinate = nonzero_indices[0]
-        if not non_zero_found and matrix[i][-1] != 0:
-            # If there's only zeros in the coefficients and a nonzero in the row's last column—inconsistent
+        if i not in nonzero_rows and matrix[i][-1] != 0:
             print(Fore.RED + "ERROR: No nonzero coefficient found, yet there's still a nonzero constant. This matrix is inconsistent.")
             return False
-    print(Fore.GREEN + "SUCCESS: The augmented matrix is consistent. Proceeding with creating pivots and performing row operations.")
+    print(Fore.GREEN + "SUCCESS: The augmented matrix is consistent. Proceeding with creating pivots and performing row operations if needed.")
+
+    # Create a sorted nonzero coordinate list by column indices
+    non_zero_index_matrix = sorted(non_zero_index_matrix, key=lambda tup: tup[1])
+    first_pivot_coordinate = non_zero_index_matrix[0]
 
     # To populate the pivot coordinates list with the coordinates of each pivot
     if first_pivot_coordinate is not None:
         new_pivot_row, new_pivot_column, new_pivot_equal_to_one, new_pivot_equal_to_zero = first_pivot_coordinate
-        for i in range(new_pivot_row, len(matrix)):  # Start at the row of the first pivot and end at the last row of matrix
+        prev_pivot_row, prev_pivot_column = new_pivot_row, new_pivot_column
+        while (new_pivot_row != len(matrix)) and (new_pivot_column != len(matrix[new_pivot_row]) - 1):  # Start at the row of the first pivot and end at the last row of matrix
             if matrix[new_pivot_row][new_pivot_column] == 0 and new_pivot_column != (len(matrix[new_pivot_row]) - 2):
                 new_pivot_column += 1
+            elif matrix[new_pivot_row][new_pivot_column] == 0 and new_pivot_column == (len(matrix[new_pivot_row]) -2) and (prev_pivot_row + 1) != len(matrix):
+                new_pivot_row += 1
+                new_pivot_column = prev_pivot_column
             elif new_pivot_row != (len(matrix)) and new_pivot_column != (len(matrix[new_pivot_row]) - 1):
                 new_pivot_equal_to_one = True if matrix[new_pivot_row][new_pivot_column] == 1 else False
                 new_pivot_equal_to_zero = True if matrix[new_pivot_row][new_pivot_column] == 0 else False
+
                 pivot_coordinates.append((new_pivot_row, new_pivot_column, new_pivot_equal_to_one, new_pivot_equal_to_zero))
                 new_pivot_row, new_pivot_column = new_pivot_row + 1, new_pivot_column + 1
+                prev_pivot_column = new_pivot_column
     else:
         print(Fore.YELLOW + "WARNING: No pivot found in the matrix.")
 
+    print(Fore.GREEN + "\nSUCCESS: Located the pivots and verified the consistency of the augmented matrix.")
+    return True
+
+def infinite_number_of_solutions_validation(matrix: List[List[float]]) -> bool:
+    # Search for columns only containing zeros, indicating an infinite number of solutions for the matrix
+    for column in zip(*matrix):
+        nonzeros_found = any(column_value != 0 for column_value in column)
+        if nonzeros_found:  # Move onto the next column to search for columns only containing zeros
+            continue
+        print(Fore.RED + "ERROR: The augmented matrix has an infinite number of solutions.")
+        return False
+
+    print(Fore.GREEN + "SUCCESS: No infinite number of solutions detected in the augmented matrix.")
+    return True
+
+def pivots_equal_to_one(matrix: List[List[float]]) -> bool:
+    # Search for nonzeros below each pivot and eliminate with pivot
+    for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
+        if matrix[pivot_row][pivot_column] != 1:
+            return False
     return True
 
 def print_matrix(matrix: List[List[float]]):
