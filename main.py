@@ -4,13 +4,13 @@ from typing import Tuple, List
 
 def main() -> None:
     global pivot_coordinates
-    # matrix: List[List[float]] = [[0, 1, 5, 3],
-    #                             [1, 4, 4, -3],
-    #                             [2, 6, 3, -2]]
+    matrix: List[List[float]] = [[0, 1, 5, 3],
+                                [1, 4, 4, -3],
+                                [2, 6, 3, -2]]
 
-    matrix = [[1, 4, -5, 1, 2],
-              [2, 5, -4, -1, 4],
-              [-3, -9, 9, 2, 2]]
+    # matrix = [[1, 4, -5, 1, 2],
+    #           [2, 5, -4, -1, 4],
+    #           [-3, -9, 9, 2, 2]]
 
     # matrix = [[2, 1, 4],
     #           [2, -1, 0]]
