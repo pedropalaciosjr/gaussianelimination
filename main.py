@@ -4,9 +4,9 @@ from typing import Tuple, List
 
 def main() -> None:
     global pivot_coordinates
-    matrix: List[List[float]] = [[0, 1, 5, 3],
-                                [1, 4, 4, -3],
-                                [2, 6, 3, -2]]
+    # matrix: List[List[float]] = [[0, 1, 5, 3],
+    #                             [1, 4, 4, -3],
+    #                             [2, 6, 3, -2]]
 
     # matrix = [[1, 4, -5, 1, 2],
     #           [2, 5, -4, -1, 4],
@@ -15,9 +15,9 @@ def main() -> None:
     # matrix = [[2, 1, 4],
     #           [2, -1, 0]]
 
-    # matrix = [[0, 0, 6, 2],
-    #           [0, 1, 4, -7],
-    #           [1, 1, 10, -5]]
+    matrix = [[0, 0, 6, 2],
+              [0, 1, 4, -7],
+              [1, 1, 10, -5]]
 
     # matrix = [[0, 0, -5, 0, -6, 3],
     #           [0, 2, 8, -1, 0, 2],
@@ -55,9 +55,9 @@ def main() -> None:
 
     init(autoreset=True) # Initialize colorama for error messages and auto-resetting after each line
 
-    # Searches for the first nonzero entry in the first row to create a diagonal of expected pivots, checks for consistency and infinite number of solutions
+    # Searches for nonzero entries in each row and sorts them by column such that the element closest to the left and highest will be the pivot
     if not find_pivot_locations_and_store(matrix):
-        print(Fore.RED + "FAILED: Failed to either locate pivots or verify the consistency of the augmented matrix.")
+        print(Fore.RED + "\nFAILED: Failed to either locate pivots or verify the consistency of the augmented matrix.")
         return
 
     print(f"PIVOT COORDINATES: {pivot_coordinates}")
@@ -102,7 +102,7 @@ def main() -> None:
     print(f"PIVOT COORDINATES AFTER EXCHANGE: {pivot_coordinates}\n")
 
     # To scale at expected pivot coordinates for nonones and nonzeros and eliminate nonzeros above and below pivots through row replacement
-    while not pivots_equal_to_one(matrix):
+    while not echelon_form(matrix, RREF):
         for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
             # To create a pivot equal to 1 at each coordinate such that on the following row to the right, the element is also equal to 1 for each row that's not the last one
             pivot_value = matrix[pivot_row][pivot_column]
@@ -195,6 +195,10 @@ def find_pivot_locations_and_store(matrix: List[List[float]]) -> bool:
                 non_zero_index_matrix.append((row_index, col_index, nonzero_equal_to_one, nonzero_equal_to_zero))
                 nonzero_rows.append(row_index)
 
+    if len(non_zero_index_matrix) == 0:
+        print(Fore.YELLOW + "WARNING: No nonzeros found in the matrix, so pivots couldn't be located.")
+        return False
+
     # Verify the consistency of the matrix
     for i in range(len(matrix)):
         if i not in nonzero_rows and matrix[i][-1] != 0:
@@ -241,11 +245,24 @@ def infinite_number_of_solutions_validation(matrix: List[List[float]]) -> bool:
     print(Fore.GREEN + "SUCCESS: No infinite number of solutions detected in the augmented matrix.")
     return True
 
-def pivots_equal_to_one(matrix: List[List[float]]) -> bool:
-    # Search for nonzeros below each pivot and eliminate with pivot
+def echelon_form(matrix: List[List[float]], RREF: bool) -> bool:
+    # Check if the matrix is in RREF or REF by checking the value of the pivots and values above and/or below
     for (pivot_row, pivot_column, pivot_equal_to_one, pivot_equal_to_zero) in pivot_coordinates:
         if matrix[pivot_row][pivot_column] != 1:
             return False
+        for index, column in enumerate(zip(*matrix)):
+            if index != pivot_column:
+                continue
+            if not RREF:
+                column = column[pivot_row:]
+            nonzeros = []
+            for column_value in column:
+                if column_value != 0:
+                    nonzeros.append(column_value)
+
+            if len(nonzeros) > 1:
+                return False
+
     return True
 
 def print_matrix(matrix: List[List[float]]):
