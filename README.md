@@ -7,5 +7,5 @@ Currently, this program has the following row operations:
   2. Row Replacement
   3. Row Exchange
 
-Included are error messages and warnings that will output if the matrix is inconsistent (coefficients of zero on variables equaling a nonzero), no pivots are found, a value is being multiplied by a value of zero during row replacement, or an augmented matrix has an infinite number of solutions (defined such that the number of variables > number of nonzero rows). 
+Included are error messages and warnings that will output if the matrix is inconsistent (coefficients of zero on variables equaling a nonzero), no pivots are found, a value is being multiplied by a value of zero during row replacement, or an augmented matrix has an infinite number of solutions (defined such that there exists a column with only zeros). 
 
