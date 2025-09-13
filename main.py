@@ -1,6 +1,7 @@
 # Gaussian elimination implementation by Pedro Palacios for MAT-2233 at UT San Antonio
 from colorama import Fore, init
 from typing import Tuple, List
+import sys
 
 def main() -> None:
     global pivot_coordinates
@@ -8,16 +9,16 @@ def main() -> None:
     #                             [1, 4, 4, -3],
     #                             [2, 6, 3, -2]]
 
-    # matrix = [[1, 4, -5, 1, 2],
-    #           [2, 5, -4, -1, 4],
-    #           [-3, -9, 9, 2, 2]]
+    matrix = [[1, 4, -5, 1, 2],
+              [2, 5, -4, -1, 4],
+              [-3, -9, 9, 2, 2]]
 
     # matrix = [[2, 1, 4],
     #           [2, -1, 0]]
 
-    matrix = [[0, 0, 6, 2],
-              [0, 1, 4, -7],
-              [1, 1, 10, -5]]
+    # matrix = [[0, 0, 6, 2],
+    #           [0, 1, 4, -7],
+    #           [1, 1, 10, -5]]
 
     # matrix = [[0, 0, -5, 0, -6, 3],
     #           [0, 2, 8, -1, 0, 2],
@@ -156,6 +157,10 @@ def main() -> None:
 
 
 def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_value: float = None) -> None: # The pivot is optional and only for printing the multiplier
+    if num == 0:
+        print(Fore.RED + f"ERROR: Cannot perform row scaling with a value equal to 0!\n")
+        sys.exit()
+
     for index, value in enumerate(matrix[row_index]):
         matrix[row_index][index] = value * num
 
@@ -167,6 +172,7 @@ def row_scaling(matrix: List[List[float]], row_index: int, num: float, pivot_val
 def row_replacement(matrix: List[List[float]], row_index: int, multiplier: float, pivot_row: int) -> None:
     if multiplier == 0:
         print(Fore.RED + f"ERROR: Cannot perform row replacement with a multiplier equal to 0!\n")
+        sys.exit()
 
     for index, value in enumerate(matrix[row_index]):
         matrix[row_index][index] = value + multiplier * matrix[pivot_row][index] # Current value + multiplier * value above in pivot row
