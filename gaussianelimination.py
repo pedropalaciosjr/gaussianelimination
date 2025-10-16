@@ -6,7 +6,6 @@ import sys
 class GaussianElimination:
     def __init__(self, matrix) -> None:
         self.matrix = matrix
-        self.test = "Hello"
         self.gaussianelimination()
 
     def gaussianelimination(self) -> None:
